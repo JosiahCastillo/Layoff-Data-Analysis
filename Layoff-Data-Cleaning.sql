@@ -182,6 +182,17 @@ FROM layoffs_staging2
 WHERE percentage_laid_off IS NULL
 AND total_laid_off IS NULL;
 
+DELETE
+FROM layoffs_staging2
+WHERE percentage_laid_off IS NULL
+AND total_laid_off IS NULL;
+
+SELECT *
+FROM layoffs_staging2;
+
+ALTER TABLE layoffs_staging2
+DROP COLUMN row_num;
+
 -- INDUSTRY NULLS
 
 SELECT DISTINCT industry
@@ -205,29 +216,30 @@ JOIN layoffs_staging2 AS t2
 	ON t1.company = t2.company
     AND t1.location = t2.location
 WHERE (t1.industry = '' OR t1.industry IS NULL)
-AND (t2.industry != '' OR t2.industry IS NOT NULL);
+AND t2.industry IS NOT NULL;
 
 
 -- UPDATE ALTERNATIVE?
+
 UPDATE layoffs_staging2
-SET industry = 
-(
-SELECT industry
-FROM layoffs_staging2
-WHERE company = 'Airbnb'
-AND industry != ''
-)
+SET industry = NULL
+WHERE industry IS NULL
+OR industry = 'NULL'
+OR industry = '';
 
 
--- IN THE EVENT OF CONVERSION ERROR
-ALTER TABLE layoffs_staging2
-MODIFY COLUMN percentage_laid_off TEXT;
+UPDATE layoffs_staging2 AS t1
+JOIN layoffs_staging2 AS t2
+	ON t1.company = t2.company
+SET t1.industry = t2.industry
+WHERE t1.industry IS NULL
+AND t2.industry IS NOT NULL;
 
 
-INSERT INTO layoffs_staging2 (percentage_laid_off)
-SELECT percentage_laid_off
-FROM layoffs_staging;
+-- PRINT
 
-SELECT percentage_laid_off
+SELECT DISTINCT industry
 FROM layoffs_staging2;
+
+
 
