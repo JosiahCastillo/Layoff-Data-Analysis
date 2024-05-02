@@ -58,10 +58,6 @@ SELECT *
 FROM layoffs_staging2
 WHERE row_num > 1;
 
-SELECT *
-FROM layoffs_staging2
-WHERE row_num > 1;
-
 INSERT INTO layoffs_staging2
 SELECT *,
 ROW_NUMBER() OVER(
@@ -71,3 +67,141 @@ FROM layoffs_staging;
 DELETE
 FROM layoffs_staging2
 WHERE row_num > 1;
+
+SELECT *
+FROM layoffs_staging2;
+
+-- COMPANY
+SELECT DISTINCT(company)
+FROM layoffs_staging2
+ORDER BY 1;
+
+SELECT DISTINCT company, TRIM(company)
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET company = TRIM(company);
+
+-- LOCATION
+
+SELECT DISTINCT(location)
+FROM layoffs_staging2
+ORDER BY 1;
+
+SELECT DISTINCT location, TRIM(location)
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET location = TRIM(location);
+
+-- INDUSTRY
+SELECT DISTINCT(industry)
+FROM layoffs_staging2
+ORDER BY 1;
+
+SELECT *
+FROM layoffs_staging2
+WHERE industry LIKE 'Crypto%';
+
+UPDATE layoffs_staging2
+SET industry = 'Crypto'
+WHERE industry LIKE 'Crypto%';
+
+-- COUNTRY
+
+SELECT DISTINCT(country)
+FROM layoffs_staging2
+ORDER BY 1;
+
+SELECT DISTINCT country, TRIM(TRAILING '.' FROM country)
+FROM layoffs_staging2
+ORDER BY 1;
+
+UPDATE layoffs_staging2
+SET country = TRIM(TRAILING '.' FROM country);
+
+SELECT DISTINCT country
+FROM layoffs_staging2
+ORDER BY 1;
+
+-- DATE
+
+SELECT `date`,
+STR_TO_DATE(`date`, '%m/%d/%Y')
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET `date` = NULL
+WHERE `date` = 'NULL';
+
+UPDATE layoffs_staging2
+SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y')
+WHERE `date`;
+
+SELECT DISTINCT `date`
+FROM layoffs_staging2;
+
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN `date` DATE;
+
+-- NULLS
+
+-- TOTAL LAID OFF NULLS
+
+SELECT DISTINCT total_laid_off
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET total_laid_off = NULL
+WHERE total_laid_off = 'NULL';
+
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN total_laid_off INT;
+
+SELECT *
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL;
+
+-- PERCENTAGE LAID OFF NULLS
+
+SELECT DISTINCT percentage_laid_off
+FROM layoffs_staging2;
+
+UPDATE layoffs_staging2
+SET percentage_laid_off = NULL
+WHERE percentage_laid_off = 'NULL';
+
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN percentage_laid_off DECIMAL(8,4);
+
+
+-- PERCENT AND TOTAL NULLS
+
+SELECT *
+FROM layoffs_staging2
+WHERE percentage_laid_off IS NULL
+AND total_laid_off IS NULL;
+
+-- INDUSTRY NULLS
+
+SELECT DISTINCT industry
+FROM layoffs_staging2;
+
+
+
+
+
+
+
+-- IN THE EVENT OF CONVERSION ERROR
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN percentage_laid_off TEXT;
+
+
+INSERT INTO layoffs_staging2 (percentage_laid_off)
+SELECT percentage_laid_off
+FROM layoffs_staging;
+
+SELECT percentage_laid_off
+FROM layoffs_staging2;
+
