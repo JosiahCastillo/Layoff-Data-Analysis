@@ -1,0 +1,7 @@
+-- EXPLORATORY DATA ANALYSIS
+
+SELECT * 
+FROM layoffs_staging2;
+
+
+
