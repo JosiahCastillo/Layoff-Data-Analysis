@@ -241,5 +241,29 @@ AND t2.industry IS NOT NULL;
 SELECT DISTINCT industry
 FROM layoffs_staging2;
 
+-- FUNDS RAISED MILLIONS
+
+SELECT DISTINCT funds_raised_millions
+FROM layoffs_staging2
+ORDER BY funds_raised_millions DESC;
+
+SELECT DISTINCT funds_raised_millions
+FROM layoffs_staging2
+WHERE funds_raised_millions LIKE '%.%'
+ORDER BY LENGTH(funds_raised_millions) DESC;
+
+SELECT DISTINCT funds_raised_millions
+FROM layoffs_staging2
+WHERE funds_raised_millions NOT LIKE '%.%'
+ORDER BY LENGTH(funds_raised_millions) DESC;
+
+UPDATE layoffs_staging2
+SET funds_raised_millions = NULL
+WHERE funds_raised_millions IS NULL
+OR funds_raised_millions = 'NULL'
+OR funds_raised_millions = '';
+
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN funds_raised_millions DECIMAL(10,4);
 
 
